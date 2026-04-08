@@ -11,7 +11,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@iarna/toml": "^2.2.5",
-    "google-auth-library": "^7.0.0",
+    "google-auth-library": "^10.6.2",
     "jsonschema": "^1.4.1",
     "yargs": "^17.1.1"
   },

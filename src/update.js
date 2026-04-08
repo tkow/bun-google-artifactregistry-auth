@@ -130,7 +130,7 @@ function parseLine(line, cache) {
     }
     // @ts-ignore
     cache[config.scope] = Object.assign(cache[config.scope], config);
-  } else if (Object.keys(config).length > 0){
+  } else if (Object.keys(config).length > 0) {
     if (!cache[BUN_REGISTRY_KEY]) {
       // @ts-ignore
       cache[BUN_REGISTRY_KEY] = {};
@@ -158,7 +158,7 @@ async function generateBunfigFile(npmrcFile, from, bunfigPath, creds) {
     /(\/\/[a-zA-Z1-9-]+[-]npm[.]pkg[.]dev\/.*\/):_password=.*(\n\/\/[a-zA-Z1-9-]+[-]npm[.]pkg[.]dev\/.*\/:username=oauth2accesstoken)/g;
   npmrcFileLines = npmrcFileLines.replace(
     legacyRegex,
-    `$1:_authToken=${creds}`
+    `$1:_authToken=${creds}`,
   );
 
   from = path.resolve(from);
@@ -188,6 +188,61 @@ async function generateBunfigFile(npmrcFile, from, bunfigPath, creds) {
   await fs.promises.writeFile(bunfigPath, outString);
 }
 
+async function generateNpmrcFile(npmrcFile, outputPath, creds) {
+  fromConfigPath = path.resolve(npmrcFile);
+  toConfigPath = path.resolve(outputPath);
+
+  const toConfigs = [];
+  const registryAuthConfigs = new Map();
+
+  // We do not use basic auth any more in `gcloud artifacts print-settings`; replace them.
+  let fromConfigLines = await fs.promises.readFile(fromConfigPath, "utf8");
+  const legacyRegex =
+    /(\/\/[a-zA-Z1-9-]+[-]npm[.]pkg[.]dev\/.*\/):_password=.*(\n\/\/[a-zA-Z1-9-]+[-]npm[.]pkg[.]dev\/.*\/:username=oauth2accesstoken)/g;
+  fromConfigLines = fromConfigLines.replace(
+    legacyRegex,
+    `$1:_authToken=${creds}`,
+  );
+
+  // Read configs from project npmrc file. For each:
+  // - registry config, create an auth token config in the user npmrc file (expect an auth token or password config already exists)
+  // - auth token config, print a warning and remove it.
+  // - password config, print a warning and move it to the user npmrc file.
+  // - everything else, keep it in the project npmrc file.
+  for (const line of fromConfigLines.split("\n")) {
+    let config = c.parseConfig(line.trim());
+    switch (config.type) {
+      case c.configType.Registry:
+        toConfigs.push(config);
+        if (config.registry.match(matchArtifactRegistryRegex)) {
+          registryAuthConfigs.set(config.registry, {
+            type: c.configType.AuthToken,
+            registry: config.registry,
+            token: creds,
+            toString: function () {
+              return `${this.registry}:_authToken=${this.token}`;
+            },
+          });
+        }
+        break;
+      default:
+        if (line && !matchArtifactRegistryRegex.test(line)) {
+          toConfigs.push(line.trim());
+        }
+    }
+  }
+
+  toConfigs.push(...registryAuthConfigs.values());
+
+  // Registries that we need to move password configs from the project npmrc file
+  // or write a new auth token config.
+
+  // Write to the user npmrc file first so that if it failed the project npmrc file
+  // would still be untouched.
+  await fs.promises.writeFile(toConfigPath, toConfigs.join(`\n`));
+}
+
 module.exports = {
   generateBunfigFile,
+  generateNpmrcFile,
 };

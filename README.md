@@ -101,3 +101,8 @@ To use the module:
 
         `$ npm run artifactregistry-login`
 
+# Bun >= 1.1.18
+
+The bun versions are currently some bugs that don't read repo from .bunfig.toml, but .npmrc. For the reason, --token-only option is ready, that outputs ephemeral token for NPM_TOKEN-$(bun-artifactregistry-auth --token-only). In addition, --npmrc=[./npmrc] with --repo-config=[./.template.npmrc] create .npmrc embedded token from repo-config file.
+
+see https://github.com/oven-sh/bun/issues/16584#issuecomment-4200723868

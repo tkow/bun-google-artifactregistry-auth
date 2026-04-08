@@ -14,16 +14,21 @@
 
 module.exports.logger = {
   logVerbose: false,
+  logSuppress: false,
   debug: function(content) {
-    if (this.logVerbose) {
+    if (this.logVerbose && !this.logSuppress) {
       console.log(content);
     }
   },
   log: function(content) {
-    console.log(content);
+    if (!this.logSuppress) {
+      console.log(content);
+    }
   },
   warn: function(content) {
-    console.warn(content);
+    if (!this.logSuppress) {
+      console.warn(content);
+    }
   },
   error: function(content) {
     console.error(content);

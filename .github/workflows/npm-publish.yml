@@ -8,6 +8,10 @@ on:
     branches:
       - "main"
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
@@ -16,26 +20,25 @@ jobs:
         with:
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
           registry-url: https://registry.npmjs.org/
+          scope: '@tkow'
+
       - uses: oven-sh/setup-bun@v1
       - name: Github config
         run: |
           git config --local user.email ${{ secrets.BOT_MAIL }}
           git config --local user.name ${{ secrets.BOT_NAME }}
-      - name: Setup npm config
-        run: |
-          npm config set '//registry.npmjs.org/:_authToken' '${NPM_TOKEN}'
-        shell: bash
 
       - name: create and publish versions
         uses: changesets/action@v1
         with:
-          commit: "chore: update versions"
-          title: "chore: update versions"
-          publish: npm publish --access public
+          commit: 'chore: update versions'
+          title: 'chore: update versions'
+          publish: npm publish --provenance --access public
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ''
+          NPM_CONFIG_PROVENANCE: true

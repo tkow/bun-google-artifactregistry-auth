@@ -22,9 +22,11 @@ const {logger} = require('./logger');
  *
  * @return {!Promise<string>} cred Encrypted access token.
  */
-async function getCreds() {
+async function getCreds(surpressLog = false) {
   try {
-    logger.log(`Retrieving application default credentials...`)
+    if (!surpressLog) {
+      logger.log(`Retrieving application default credentials...`);
+    }
     const creds = await getApplicationDefaultCredentials();
     return creds;
   } catch (err) {
@@ -69,7 +71,6 @@ async function getGcloudCredentials() {
   // the token from gcloud auth print-access-token has a newline in the end
   return stdout.trim();
 }
-
 
 module.exports = {
   getCreds
