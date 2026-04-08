@@ -146,5 +146,6 @@ function parseConfig(text) {
 
 module.exports = {
   configType,
-  parseConfig
+  parseConfig,
+  registryNpm
 };

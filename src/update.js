@@ -220,7 +220,7 @@ async function generateNpmrcFile(npmrcFile, outputPath, creds) {
             registry: config.registry,
             token: creds,
             toString: function () {
-              return `${this.registry}:_authToken=${this.token}`;
+              return `${c.registryNpm(this.registry)}:_authToken=${this.token}`;
             },
           });
         }
@@ -233,7 +233,7 @@ async function generateNpmrcFile(npmrcFile, outputPath, creds) {
   }
 
   toConfigs.push(...registryAuthConfigs.values());
-
+console.log(toConfigs)
   // Registries that we need to move password configs from the project npmrc file
   // or write a new auth token config.
 
