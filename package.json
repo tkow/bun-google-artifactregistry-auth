@@ -19,6 +19,7 @@
     "bun-artifactregistry-auth": "./src/main.js"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.30.0",
     "@types/node": "^20.11.24",
     "mocha": "^6.2.0",
     "rewire": "^5.0.0"
