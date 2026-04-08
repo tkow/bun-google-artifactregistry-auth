@@ -233,7 +233,6 @@ async function generateNpmrcFile(npmrcFile, outputPath, creds) {
   }
 
   toConfigs.push(...registryAuthConfigs.values());
-console.log(toConfigs)
   // Registries that we need to move password configs from the project npmrc file
   // or write a new auth token config.
 
