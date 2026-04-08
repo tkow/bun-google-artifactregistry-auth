@@ -6,7 +6,7 @@ name: push events
 on:
   push:
     branches:
-      - "main"
+      - "master"
 
 permissions:
   id-token: write # Required for OIDC
