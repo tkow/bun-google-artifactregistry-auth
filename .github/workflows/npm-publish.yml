@@ -29,8 +29,11 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - name: Github config
         run: |
-          git config --local user.email ${{ secrets.BOT_MAIL }}
-          git config --local user.name ${{ secrets.BOT_NAME }}
+          git config --local user.name ${{ env.BOT_NAME }}
+          git config --local user.email ${{ env.BOT_MAIL }}
+        env:
+          BOT_NAME: "github-actions[bot]"
+          BOT_MAIL: "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: create and publish versions
         uses: changesets/action@v1
