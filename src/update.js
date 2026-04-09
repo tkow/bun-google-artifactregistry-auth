@@ -220,7 +220,7 @@ async function generateNpmrcFile(npmrcFile, outputPath, creds) {
             registry: config.registry,
             token: creds,
             toString: function () {
-              return `${c.registryNpm(this.registry)}:_authToken=${this.token}`;
+              return `${c.registryNpm(this.registry)}_authToken=${this.token}`;
             },
           });
         }
