@@ -1,5 +1,11 @@
 # @tkow/bun-google-artifactregistry-auth
 
+## 0.0.5
+
+### Patch Changes
+
+- 6ba004a: fix: remove bug colon
+
 ## 0.0.4
 
 ### Patch Changes
